@@ -1,45 +1,117 @@
 import React, { Component } from 'react';
-import logo from '../logo.png';
 import './App.css';
+//import {VotingTable} from "./VotingTable";
+//import { VotingTable } from './VotingTable.js';
+
+const IpfsHttpClient = require('ipfs-http-client')
+const ipfs           =  IpfsHttpClient({host: 'ipfs.infura.io',port:5001, protocol:'https'})
+const initial_table  = 'https://ipfs.infura.io/ipfs/QmTTTLx6TdCMSUbdmKuXHwSWKS8xaPityA12Yf22S2BRuC';
+var parse            = require('html-react-parser');
+
+
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state =
+        {
+            buffer: null,
+            table_: ''
+        }
+  }
+
+
+  captureFile = (event) =>
+  {
+    event.preventDefault();
+
+    //Get ready for IPFS
+    const file   = event.target.files[0];
+    const reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = () =>
+    {
+      //state OBJ
+      this.setState({buffer:Buffer(reader.result)})
+      console.log(this.state)
+
+    }
+  }
+
+  onSubmit = (event) => {
+    event.preventDefault();
+    console.log("Submitting form to  IPFS");
+    ipfs.add(this.state.buffer, (error, result) =>
+    {
+        console.log('IPFS RESULT', result);
+
+        let hash = result[0].hash;
+
+        if(error)
+        {
+          console.log(error);
+          return;
+        }
+    })
+
+
+  }
+    loadData = () => {
+      fetch(initial_table)
+        .then(function (response) {
+          //console.log(initial_table + " -> " + response.ok);
+          if(response.ok){
+            return response.text();
+          }
+          throw new Error('Error message.');
+        })
+        .then(function (data) {
+          //console.log("data: ", data);
+            document.getElementById('init').innerHTML = "";
+            document.getElementById('init').innerHTML = data;
+
+        }.bind(this))
+        .catch(function (err) {
+          console.log("failed to load ", initial_table, err.message);
+        });
+    }
+
   render() {
+
+
     return (
+
       <div>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-          <a
+          <p
             className="navbar-brand col-sm-3 col-md-2 mr-0"
-            href="http://www.dappuniversity.com/bootcamp"
-            target="_blank"
-            rel="noopener noreferrer"
+
           >
-            Dapp University
-          </a>
+            D-Vote
+          </p>
         </nav>
         <div className="container-fluid mt-5">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
-              <div className="content mr-auto ml-auto">
-                <a
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={logo} className="App-logo" alt="logo" />
-                </a>
-                <h1>Dapp University Starter Kit</h1>
-                <p>
-                  Edit <code>src/components/App.js</code> and save to reload.
-                </p>
-                <a
-                  className="App-link"
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LEARN BLOCKCHAIN <u><b>NOW! </b></u>
-                </a>
+
+
+              <div id='table-div'>
+
+                  {this.loadData()}
+                  <div id='init'></div>
+                  <p id='line'></p>
+                  <p></p>
+
+                  <form onSubmit={this.onSubmit}>
+                    <input type='file' onChange={this.captureFile}/>
+                    <input class='btn btn-primary' type='submit' value='Submit Voting List' />
+
+                  </form>
+                   <p></p>
               </div>
+
+
             </main>
           </div>
         </div>
