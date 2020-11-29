@@ -406,7 +406,7 @@ class App extends Component {
 
 
                             /*
-                            QmSpnAPoxuXP83zMXSPECL9rKytvLFh9NBGZrQrKs9bbXk
+
                                 the idea here to encrypt the voter and send the array final_state to IPFS. The contract used (Election)
                                 will keep always the last hashed state of the application D-Vote. By doing so, we can have always for everyone the same
                                 number of votes even if they bypass the contract as the data that will populate the table will be retrieved from IPFS. As the vote should be
