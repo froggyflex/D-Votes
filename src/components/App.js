@@ -375,6 +375,15 @@ class App extends Component {
 
                                       if(id == cc)
                                       {
+
+                                           /*
+
+                                                the idea here to encrypt the voter and send the array final_state to IPFS. The contract used (Election)
+                                                will keep always the last hashed state of the application D-Vote. By doing so, we can have always for everyone the same
+                                                number of votes even if they bypass the contract as the data that will populate the table will be retrieved from IPFS. As the vote should be
+                                                anonymous, by encrypting it with AES it is not possible to see who voted who. The only thing that can be considered public
+                                                is the number of votes per candidate and even this, can be seen only after the vote session has been submitted.
+                                            */
                                           console.log('just finished the loop')
                                           final_state.push(new VotingSession(connected_account, record_voteds));
                                           ipfsu.addJSON(final_state,(error, result) =>
@@ -405,14 +414,7 @@ class App extends Component {
                             }
 
 
-                            /*
 
-                                the idea here to encrypt the voter and send the array final_state to IPFS. The contract used (Election)
-                                will keep always the last hashed state of the application D-Vote. By doing so, we can have always for everyone the same
-                                number of votes even if they bypass the contract as the data that will populate the table will be retrieved from IPFS. As the vote should be
-                                anonymous, by encrypting it with AES it is not possible to see who voted who. The only thing that can be considered public
-                                is the number of votes per candidate and even this, can be seen only after the vote session has been submitted.
-                     */
 
 
                         }.bind(this))
