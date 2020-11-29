@@ -1,6 +1,8 @@
 pragma solidity ^0.5.16;
 
 contract Election {
+
+
     // Model a Candidate
     struct Candidate {
         uint id;
@@ -17,6 +19,7 @@ contract Election {
 
     // Fetch Candidate
     mapping(uint => Candidate) public candidates;
+
 
     // Store Candidates Count
     uint public candidatesCount;
