@@ -34,7 +34,7 @@ This contract as mentioned before, will load the structure of type Candidate. In
 <i>contract.methods.candidatesCount().call()</i> in order to iterate through the mappings and populate the table return earlier from IPFS.
 Below a snippet where it can be seen the proccess:
 
-                fetch(initial_table)
+                fetch(initial_table) //initial_table is the IPFS adress of the empty structure
                     .then(function (response) {
                       //console.log(initial_table + " -> " + response.ok);
                       if(response.ok){
