@@ -32,6 +32,65 @@ no votes have been added yet). Once the table has been parsed and displayed, the
 data structure within the contract that will be the result of the callback with the call <i>contract.methods.Candidates().send({from:account})</i>. 
 This contract as mentioned before, will load the structure of type Candidate. In order to access the latters we need to make a call at the 
 <i>contract.methods.candidatesCount().call()</i> in order to iterate through the mappings and populate the table return earlier from IPFS.
+Below a snippet where it can be seen the proccess:
+
+                fetch(initial_table)
+                    .then(function (response) {
+                      //console.log(initial_table + " -> " + response.ok);
+                      if(response.ok){
+                        return response.text();
+                      }
+                      throw new Error('Error message.');
+                    })
+                    .then( function (data) {
+                      //console.log("data: ", data);
+
+                        document.getElementById('init').innerHTML = "";
+                        document.getElementById('init').innerHTML = data;
+                        console.log(this.state.account)
+
+                        const contract = window.web3.eth.Contract(Election.abi, netAddress);
+                        //console.log(contract)
+                        this.setState({contract:contract.address})
+
+
+                        contract.methods.Candidates().send({from:this.state.account}); // this needs to be implemented automatically
+
+                        contract.methods.candidatesCount().call().then(function(candidatesCount) {
+
+                            console.log("Candidates Count ",candidatesCount)
+
+                            electionInstance = contract;
+                            var candidatesVote = $("#candidatesSelect");
+                            candidatesVote.empty();
+
+                            var candidatesSelect = $('#candidates_table');
+                            candidatesSelect.empty();
+
+                                let rv = [];
+
+                            for (var i = 1; i <= candidatesCount; i++) {
+
+                                    contract.methods.candidates(i).call().then((candidate) => {
+                                        //console.log("CANDIDATE: ",candidate)
+                                      var id = candidate[0];
+                                      var name = candidate[1];
+                                      var last = candidate[2];
+                                      var desc = candidate[3];
+                                      var voteCount = candidate[4]; // here the value is 0 as it was just populated
+
+                                      // Render candidate Result
+                                      var candidateTemplate = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + last + "</td><td>" + desc + "</td><td id='vc"+id+"'>" + voteCount + "</td></tr>"
+                                        candidatesSelect.append(candidateTemplate);
+
+                                      // Render candidate ballot option
+                                      var candidateOption = "<option value='" + id + "' >" + name + " "+last+ "</ option>"
+                                      candidatesVote.append(candidateOption);
+                                      // Object.assign(rv, {item : });
+                                       rv.push(new Pair(id,voteCount));
+                                       // rv[id] =
+
+                                    });
 
 <h2>How the voting works</h2>
 In order for the user to vote, we must initiate a new function of the same contract like:
