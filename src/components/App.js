@@ -1,13 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, createRef} from 'react';
 import './App.css';
 import Web3 from "web3";
 import * as $ from 'jquery';
 import Election from '../abis/Election.json';
 import IPFSHash from '../abis/IPFSHash.json';
 import IPFS from "ipfs-mini";
-import { Buffer } from 'buffer'
 import CryptoJS from "react-native-crypto-js";
-
+import html2canvas from "html2canvas";
 const IpfsHttpClient = require('ipfs-http-client')
 const ipfs           =  IpfsHttpClient({host: 'ipfs.infura.io',port:5001, protocol:'https'})
 const initial_table  = 'https://ipfs.infura.io/ipfs/QmaDZhv2TP6hbkkBsmrgnDNLDLvbfPPYWfWFqtm7HKEsik';
@@ -20,9 +19,10 @@ var netAddress;
 var netDataHash;
 var netAddressHas;
 var connected_account;
-
+var ref;
 var lastHash="";
 var cc;
+
 
 class Pair {
   constructor(id, votecount) {
@@ -40,7 +40,6 @@ class VotingSession {
 
 
 class App extends Component {
-
   constructor(props) {
     super(props);
     this.getLastState = this.getLastState.bind(this);
@@ -52,8 +51,9 @@ class App extends Component {
             voters: []
         }
 
+
   }
-   makeid = (length) => {
+  makeid = (length) => {
        var result           = '';
        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
        var charactersLength = characters.length;
@@ -445,8 +445,42 @@ class App extends Component {
   }
 
 
+
   render() {
 
+        const test = () => {
+             document.getElementById('staticPlace').innerHTML = new Date().getDate() +"-"+new Date().getMonth() +"-"+new Date().getFullYear()+"  "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds();
+
+             html2canvas(document.querySelector("#root"))
+            .then(function (canvas) {
+                var base64URL = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
+
+                 fetch('data:image/jpeg;'+base64URL)
+                .then(res => res.blob())
+                .then(blob => {
+                  const file = new File([blob], 'lastStateSession.jpeg', blob)
+
+                    ipfs.add(file, (error, result) => {
+                        if(error) {
+                         console.error(error)
+                         return
+                        }
+                        document.getElementById('public_state').innerText = "View Public Results";
+                        document.getElementById('public_state').href = 'https://ipfs.infura.io/ipfs/'+result[0].hash;
+                        document.getElementById('public_state').target = '_blank';
+
+
+
+                })
+
+            })
+
+
+
+
+
+         });
+        }
     return (
 
       <div>
@@ -472,8 +506,7 @@ class App extends Component {
 
               <div id='table-div'>
 
-                  {}
-
+                  <p id='staticPlace'></p>
                   <div id='init'></div>
                   <p id='line'></p>
                   <p></p>
@@ -482,8 +515,17 @@ class App extends Component {
                     {/*<input type='file' onChange={this.captureFile}/>*/}
                     <input class='btn btn-primary' type='submit' value='Submit Voting List' />
 
+                    <br></br> <br></br>
+
                   </form>
-                   <p></p>
+                  <p></p>
+                  <button class='btn btn-success' onClick={test}>Publish Results</button>
+                  <br></br><br></br>
+                  <a id='public_state'></a>
+                  <br></br>
+
+
+
               </div>
 
 
@@ -492,6 +534,7 @@ class App extends Component {
         </div>
       </div>
     );
+
   }
 }
 

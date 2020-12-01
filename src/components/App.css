@@ -8,6 +8,10 @@
 	margin-top:100px;
 }
 
+#test
+{
+	visibility: hidden;
+}
 select
 {
 	margin: 0 auto;
