@@ -1,9 +1,9 @@
 # D-Votes
 
-<legend>To do:</legend>
+<legend>Possible improvements:</legend>
 <ul>
   <li>Encrypt the voter address
-  <li>Impelemt a way to check if the candidates have already been added automatically
+ 
 </u>
 <br><br><br><br>
 <b> LOGIC OF DAPP </b>
