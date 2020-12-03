@@ -2,7 +2,8 @@ pragma solidity ^0.5.16;
 
 contract Election {
 
-
+    //are Candidates in the list?
+    string  populated = "0" ;
     // Model a Candidate
     struct Candidate {
         uint id;
@@ -12,6 +13,14 @@ contract Election {
         uint voteCount;
 
 
+    }
+    function setPop(string memory _populated) public{
+        populated = _populated;
+    }
+
+    function getPop() public view returns (string memory)
+    {
+        return populated;
     }
     // Store accounts that have voted
     mapping(address => bool) public voters;

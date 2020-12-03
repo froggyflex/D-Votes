@@ -134,8 +134,24 @@ class App extends Component {
                         //console.log(contract)
                         this.setState({contract:contract.address})
 
+                        //0x542AfDAbd71AaF36DD00157096849A24B3FE4F0B
 
-                        //contract.methods.Candidates().send({from:this.state.account});
+                        contract.methods.getPop().call().then(function (populated)
+                        {
+                            console.log(populated,'populated')
+                            if(populated == "0")
+                            {
+                                contract.methods.Candidates().send({from:this.state.account}).then(function (r)
+                                {
+                                    console.log(r,'Candidates')
+                                    contract.methods.setPop("1").send({from:this.state.account}).then(function (r)
+                                    {
+                                        this.init();
+                                    }.bind(this));
+
+                                }.bind(this))
+                            }
+                        }.bind(this));
 
                         contract.methods.candidatesCount().call().then(function(candidatesCount) {
 
